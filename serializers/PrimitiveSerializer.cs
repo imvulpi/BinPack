@@ -18,6 +18,7 @@ namespace BinPack.serializers
         /// <exception cref="NotSupportedException">Throws an error if type is not supported</exception>
         public static void Serialize(MemoryStream stream, Type objType, object obj)
         {
+        {  
             if (objType == typeof(bool))
             {
                 bool boolObj = (bool)obj;
@@ -86,6 +87,7 @@ namespace BinPack.serializers
             {
                 throw new NotSupportedException($"Type {objType} is not supported for serialization.");
             }
+            stream.WriteByte(StructureHelper.VALUE_DATA_END);
         }
     }
 }

@@ -17,11 +17,11 @@ namespace BinPack
         /// <returns>Serialized bytes</returns>
         public static byte[] Serialize(object obj)
         {
-            using (var stream = new MemoryStream())
-            {
-                SerializeInternal(stream, obj);
-                return stream.ToArray();
-            }
+            MemoryStream stream = new();
+            SerializeInternal(stream, obj);
+            byte[] data = stream.ToArray();
+            stream.Dispose();
+            return data;
         }
 
         /// <summary>
@@ -44,33 +44,23 @@ namespace BinPack
             }
 
             Type objType = obj.GetType();
-            if (objType.FullName != null)
+            if (objType.IsPrimitive)
             {
-                if (objType.IsPrimitive)
-                {
-                    PrimitiveSerializer.Serialize(stream, objType, obj);
-                }
-                else if (objType.IsClass && !objType.IsArray && objType != typeof(string))
-                {
-                    stream.WriteByte(StructureHelper.OBJECT_START);
-                    ClassSerializer.Serialize(stream, objType, obj);
-                    stream.WriteByte(StructureHelper.OBJECT_END);
-                }else if (objType.IsArray)
-                {
-                    if (obj is byte[] byteArray)
-                    {
-                        StructureHelper.WriteValue(stream, byteArray);
-                    }
-                }
-                else if (objType == typeof(string)) // Special
-                {
-                    StructureHelper.WriteValue(stream, StringConvertor.GetBytes((string)obj));
-                }
-            }
-            else
-            {
-                stream.WriteByte(StructureHelper.NULL);
+                PrimitiveSerializer.Serialize(stream, objType, obj);
                 return;
+            }
+            else if (objType.IsClass && !objType.IsArray && objType != typeof(string))
+            {
+                stream.WriteByte(StructureHelper.OBJECT_START);
+                ClassSerializer.Serialize(stream, objType, obj);
+                stream.WriteByte(StructureHelper.OBJECT_END);
+            }else if (objType.IsArray)
+            {
+                ArraySerializer.SerializeArray(stream, objType, obj);
+            }
+            else if (objType == typeof(string)) // Special
+            {
+                StructureHelper.WriteValue(stream, StringConvertor.GetBytes((string)obj));
             }
         }
     }

@@ -41,7 +41,6 @@ namespace BinPack.commons
         /// <param name="entry">Key name</param>
         public static void WriteKey(MemoryStream stream, string entry)
         {
-            Console.WriteLine($"Writing KEY {entry}");
             byte[] stringBytes = StringConvertor.GetBytes(entry);
             stream.WriteByte(START_END);
             for (int i = 0; i < stringBytes.Length; i++)
@@ -74,7 +73,16 @@ namespace BinPack.commons
         /// <param name="value"></param>
         public static void WriteValue(MemoryStream stream, byte[]? value)
         {
-            stream.WriteByte(VALUE_START);
+            if (value == null)
+            {
+                stream.WriteByte(NULL);
+                return;
+            }
+            ByteHelper.WriteByteArray(stream, value);
+        }
+
+        public static void WriteArrayValue(MemoryStream stream, byte[]? value)
+        {
             stream.WriteByte(VALUE_DATA_START);
             if (value == null)
             {

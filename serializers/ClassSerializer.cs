@@ -66,12 +66,14 @@ namespace BinPack.serializers
                 object? propertyValue = property.GetValue(obj);
                 if (propertyValue == null)
                 {
+                    stream.WriteByte(StructureHelper.VALUE_START);
                     StructureHelper.WriteValue(stream, null);
                     stream.WriteByte(StructureHelper.NULL);
                 }
                 else
                 {
-                    ByteHelper.WriteByteArray(stream, BinPackSerializer.Serialize(propertyValue));
+                    stream.WriteByte(StructureHelper.VALUE_START);
+                    StructureHelper.WriteValue(stream, BinPackSerializer.Serialize(propertyValue));
                 }
                 writeValueNext = true;
             }
