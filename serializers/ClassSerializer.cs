@@ -67,13 +67,17 @@ namespace BinPack.serializers
                 if (propertyValue == null)
                 {
                     stream.WriteByte(StructureHelper.VALUE_START);
+                    stream.WriteByte(StructureHelper.VALUE_DATA_START);
                     StructureHelper.WriteValue(stream, null);
+                    stream.WriteByte(StructureHelper.VALUE_DATA_END);
                     stream.WriteByte(StructureHelper.NULL);
                 }
                 else
                 {
                     stream.WriteByte(StructureHelper.VALUE_START);
+                    stream.WriteByte(StructureHelper.VALUE_DATA_START);
                     StructureHelper.WriteValue(stream, BinPackSerializer.Serialize(propertyValue));
+                    stream.WriteByte(StructureHelper.VALUE_DATA_END);
                 }
                 writeValueNext = true;
             }
